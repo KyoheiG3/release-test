@@ -24,9 +24,9 @@ categories:
   - title: 📄 Documentation
     labels:
       - C-docs
-  - title: Other Changes
-    labels:
-      - "*"
+
+exclude-labels:
+  - "C-release"
 
 change-title-escapes: '\<*_&'
 

@@ -22,3 +22,9 @@ changelog:
         - C-ci
         - C-config
         - C-package
+    - title: 📄 Documentation
+      labels:
+        - C-docs
+    - title: Other Changes
+      labels:
+        - "*"

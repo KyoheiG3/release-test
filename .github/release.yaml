@@ -1,0 +1,24 @@
+changelog:
+  exclude:
+    labels:
+      - C-release
+  categories:
+    - title: 🚀 Features
+      labels:
+        - C-feat
+    - title: 🐛 Bug Fixes
+      labels:
+        - C-fix
+    - title: 📈 Quality
+      labels:
+        - C-perf
+        - C-refactor
+        - C-style
+        - C-test
+    - title: 🧰 Maintenance
+      labels:
+        - C-build
+        - C-chore
+        - C-ci
+        - C-config
+        - C-package

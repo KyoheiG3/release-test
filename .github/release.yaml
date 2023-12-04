@@ -1,6 +1,7 @@
 changelog:
   exclude:
     labels:
+      - C-docs
       - C-release
   categories:
     - title: 🚀 Features
@@ -22,9 +23,6 @@ changelog:
         - C-ci
         - C-config
         - C-package
-    - title: 📄 Documentation
-      labels:
-        - C-docs
     - title: Other Changes
       labels:
         - "*"

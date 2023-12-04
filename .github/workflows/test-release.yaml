@@ -1,0 +1,28 @@
+name: Test Release
+
+on:
+  release:
+    types:
+      - published
+      - created
+      - released
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release tag
+        run: |
+          echo "- github.event.release.name --------------------------"
+          echo "${{ github.event.release.name }}"
+          echo "- github.event.release.tag --------------------------"
+          echo "${{ github.event.release.tag }}"
+          echo "- github.event.release.tag_commit --------------------------"
+          echo "${{ github.event.release.tag_commit }}"
+          echo "- github.event.release.tag_name --------------------------"
+          echo "${{ github.event.release.tag_name }}"
+        # uses: pozetroninc/github-action-get-latest-release@v0.7
+        # with:
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   repository: ${{ github.repository }}
+        #   excludes: prerelease, draft

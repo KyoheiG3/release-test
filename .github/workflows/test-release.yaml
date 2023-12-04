@@ -28,4 +28,10 @@ jobs:
                 tag_name: version,
                 name: name === tag_name ? version : name,
               });
+
+              github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/' + tag_name,
+              });
             }

@@ -1,4 +1,4 @@
-name: Release
+name: Release !!!
 
 on:
   release:
@@ -6,7 +6,8 @@ on:
       - published
 
 jobs:
-  label:
+  publish:
+    name: publish!!
     runs-on: ubuntu-latest
     steps:
       - name: Release tag

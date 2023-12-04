@@ -8,3 +8,4 @@ test: 05
 test: 06
 test: 07
 release: 01
+release: 02

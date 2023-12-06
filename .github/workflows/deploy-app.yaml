@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       build:
-        description: "Build for envirinment"
+        description: "Build envirinment"
         required: true
         default: stg
         type: choice
@@ -16,6 +16,7 @@ on:
           # - dev
           - stg
           - prd
+          - "prd, but not pre-release"
 
 jobs:
   publish:
@@ -49,6 +50,13 @@ jobs:
             if [[ $build == 'prd' ]]; then
               rc_num=$(expr $(git tag -l "$version-rc.[0-9]" | grep -c ".") + 1)
               echo 'next deploy tag is' "$version-rc.$rc_num"
+            else
+              if [[ $(git tag -l "$version" | grep -c ".") -eq 0 ]]; then
+                echo 'next deploy tag is' "$version"
+              else
+                echo "next deploy tag ($version) is already exists."
+                exit 1
+              fi
             fi
           fi
       # - name: Tagging

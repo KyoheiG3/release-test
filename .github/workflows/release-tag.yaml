@@ -1,4 +1,4 @@
-name: Test Release
+name: Release tag
 
 on:
   release:
@@ -11,7 +11,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Release tag
+      - name: Tagging
         uses: actions/github-script@v7
         with:
           script: |
@@ -27,11 +27,5 @@ jobs:
                 release_id: release_id,
                 tag_name: version,
                 name: name === tag_name ? version : name,
-              });
-
-              github.rest.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: 'tags/' + tag_name,
               });
             }

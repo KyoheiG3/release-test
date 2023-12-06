@@ -43,21 +43,26 @@ jobs:
           version="${{ steps.tag.outputs.version }}"
           build="${{ github.event.inputs.build }}"
 
+          if [[ $(git tag -l "$version" | grep -c ".") -ne 0 ]]; then
+            echo "next deploy tag ($version) is already exists."
+            exit 1
+          fi
+
           if [[ $build =~ ^(stg|prd.*)$ ]]; then
             stg_num=$(expr $(git tag -l "$version-stg.[0-9]" | grep -c ".") + 1)
             echo 'next deploy tag is' "$version-stg.$stg_num"
+            git tag "$version-stg.$stg_num"
 
             if [[ $build == 'prd' ]]; then
               rc_num=$(expr $(git tag -l "$version-rc.[0-9]" | grep -c ".") + 1)
               echo 'next deploy tag is' "$version-rc.$rc_num"
+              git tag "$version-rc.$rc_num"
             else
-              if [[ $(git tag -l "$version" | grep -c ".") -eq 0 ]]; then
-                echo 'next deploy tag is' "$version"
-              else
-                echo "next deploy tag ($version) is already exists."
-                exit 1
-              fi
+              echo 'next deploy tag is' "$version"
+              git tag "$version"
             fi
+
+            git push origin --tags
           fi
       # - name: Tagging
       #   uses: actions/github-script@v7

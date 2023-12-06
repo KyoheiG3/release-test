@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Release tag (e.g. v1.2.3)"
+        required: true
+        type: string
+      build:
+        description: "Build for envirinment"
+        required: true
+        default: stg
+        type: choice
+        options:
+          # - dev
+          - stg
+          - prd
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '1' $GITHUB_REF
+          echo '2' ${{ github.ref }}
+          echo '3' ${{ github.ref_name }}
+          echo '4' ${{ github.head_ref }}
+          echo '5' ${{ github.base_ref }}
+      # - name: Tagging
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       github.rest.git.createTag({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         tag: ${{ github.event.inputs.tags }},
+      #         message: ${{ github.event.inputs.tags }},
+      #         object: ${{ github.sha }},
+      #         type: 'commit',
+      #       });

@@ -40,10 +40,10 @@ jobs:
 
       - name: show log
         run: |
-          version="${{ steps.tag.outputs.version }}"
-          build="${{ github.event.inputs.build }}"
+          version=${{ steps.tag.outputs.version }}
+          build=${{ github.event.inputs.build }}
 
-          if [[ $build =~ ^(stg|prd)$ ]]; then
+          if [[ $build =~ ^(stg|prd.*)$ ]]; then
             stg_num=$(expr $(git tag -l "$version-stg.[0-9]" | grep -c ".") + 1)
             echo 'next deploy tag is' "$version-stg.$stg_num"
 

@@ -19,7 +19,9 @@ on:
           - "prd, but not pre-release"
 
 jobs:
-  publish:
+  deploy:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Get input tag version

@@ -43,11 +43,11 @@ jobs:
           version="${{ steps.tag.outputs.version }}"
           build="${{ github.event.inputs.build }}"
 
-          if [[ "$build" =~ ^(stg|prd)$ ]]; then
+          if [[ $build =~ ^(stg|prd)$ ]]; then
             stg_num=$(expr $(git tag -l "$version-stg.[0-9]" | grep -c ".") + 1)
             echo 'next deploy tag is' "$version-stg.$stg_num"
 
-            if [[ "$build" == 'prd' ]]; then
+            if [[ $build == 'prd' ]]; then
               rc_num=$(expr $(git tag -l "$version-rc.[0-9]" | grep -c ".") + 1)
               echo 'next deploy tag is' "$version-rc.$rc_num"
             else

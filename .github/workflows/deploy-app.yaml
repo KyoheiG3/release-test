@@ -50,14 +50,14 @@ jobs:
           fi
 
           if [[ $build =~ ^(stg|prd.*)$ ]]; then
-            getNextVersionNum() {
+            getNextNum() {
               echo $(expr $(git tag -l "$version-$1.[0-9]" | grep -c ".") + 1)
             }
 
-            git tag "$version-stg.$(getNextVersionNum stg)"
+            git tag "$version-stg.$(getNextNum stg)"
 
             if [[ $build == 'prd' ]]; then
-              git tag "$version-rc.$(getNextVersionNum rc)"
+              git tag "$version-rc.$(getNextNum rc)"
             else
               git tag "$version"
             fi

@@ -19,7 +19,7 @@ on:
 
 jobs:
   tag-env:
-    if: github.event_name == 'push' && github.event.ref_type == 'tag'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       env: ${{ steps.build.outputs.env }}

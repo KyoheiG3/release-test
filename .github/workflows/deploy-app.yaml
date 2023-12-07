@@ -1,10 +1,10 @@
-name: Deploy
+name: Tag for distribute
 
 on:
   workflow_dispatch:
     inputs:
       tags:
-        description: "Deploy tag (e.g. 1.2.3)"
+        description: "Tag (e.g. 1.2.3)"
         required: true
         type: string
       build:
@@ -50,7 +50,7 @@ jobs:
           ref="${{ github.event.inputs.ref }}"
 
           if [[ $(git tag -l "$version" | grep -c ".") -ne 0 ]]; then
-            echo "next deploy tag ($version) is already exists."
+            echo "Input version ($version) is already exists."
             exit 1
           fi
 

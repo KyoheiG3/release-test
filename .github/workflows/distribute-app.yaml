@@ -21,7 +21,7 @@ jobs:
           echo '5' ${{ github.base_ref }}
 
           tag=${{ github.ref_name }}
-          if [[ $version == *"-stg"* ]]; then
+          if [[ $tag == *"-stg"* ]]; then
               echo "env=stg" >> $GITHUB_OUTPUT
           else
               echo "env=prd" >> $GITHUB_OUTPUT

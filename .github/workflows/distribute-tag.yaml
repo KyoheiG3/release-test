@@ -59,12 +59,12 @@ jobs:
               echo $(expr $(git tag -l "$version-$1.[0-9]" | grep -c ".") + 1)
             }
 
-            git tag "$version-stg.$(getNextNum stg)" $ref
+            git tag -f "$version-stg.$(getNextNum stg)" $ref
 
             if [[ $build == 'prd' ]]; then
-              git tag "$version-rc.$(getNextNum rc)" $ref
+              git tag -f "$version-rc.$(getNextNum rc)" $ref
             elif [[ $build != 'stg' ]]; then
-              git tag "$version" $ref
+              git tag -f "$version" $ref
             fi
 
             git push origin --tags

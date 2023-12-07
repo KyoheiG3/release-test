@@ -1,0 +1,71 @@
+name: Tag for distribute
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Tag (e.g. 1.2.3)"
+        required: true
+        type: string
+      build:
+        description: "Build envirinment"
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
+          - "prd, but not pre-release"
+      ref:
+        description: "Commit SHA or branch name (optional)"
+        required: false
+        type: string
+
+jobs:
+  tagging:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get input tag version
+        id: tag
+        run: |
+          tag=${{ github.event.inputs.tags }}
+          if [[ $tag =~ ^v?([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "version=v${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "Input tag ($tag) is not Semantic Versioning format. (e.g. 1.2.3)"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add tag
+        run: |
+          version="${{ steps.tag.outputs.version }}"
+          build="${{ github.event.inputs.build }}"
+          ref="${{ github.event.inputs.ref }}"
+
+          if [[ $(git tag -l "$version" | grep -c ".") -ne 0 ]]; then
+            echo "Input version ($version) is already exists."
+            exit 1
+          fi
+
+          if [[ $build =~ ^(stg|prd.*)$ ]]; then
+            getNextNum() {
+              echo $(expr $(git tag -l "$version-$1.[0-9]" | grep -c ".") + 1)
+            }
+
+            git tag "$version-stg.$(getNextNum stg)" "$ref"
+
+            if [[ $build == 'prd' ]]; then
+              git tag "$version-rc.$(getNextNum rc)" "$ref"
+            else
+              git tag "$version" "$ref"
+            fi
+
+            git push origin --tags
+          fi

@@ -67,6 +67,7 @@ jobs:
           fetch-depth: 0
 
       - name: Add tag
+        if: ${{ !cancelled() && !failure() }}
         run: |
           latest_ref=${{ steps.latest-release.outputs.release || '$(git rev-list --max-parents=0 HEAD)' }}
           count_since_latest=$(git rev-list --count $latest_ref..HEAD)

@@ -23,9 +23,7 @@ on:
 
 jobs:
   tagging:
-    permissions:
-      contents: write
-      pull-requests: write
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Get input tag version

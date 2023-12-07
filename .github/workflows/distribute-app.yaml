@@ -1,39 +1,117 @@
 name: Distribute app
 
 on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-stg.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
   workflow_dispatch:
     inputs:
-      environment:
-        description: Environment
+      env:
+        description: "Build envirinment"
         required: true
         type: choice
         options:
           - dev
           - stg
           - prd
-  push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
-      - v[0-9]+.[0-9]+.[0-9]+-stg.[0-9]+
-      - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
 
 jobs:
   tag-env:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - name: Get build envirinment
-        if: github.event_name == 'push'
-        id: build
+      - name: Get tag envirinment
+        id: tag
         run: |
-          tag=${{ github.ref_name }}
-          if [[ $tag == *"-stg"* ]]; then
-              echo "env=stg" >> $GITHUB_OUTPUT
+          version=${{ github.ref_name }}
+          if [[ $version == *"-stg"* ]]; then
+            echo "BUILD_ENV=stg" >> $GITHUB_ENV
           else
-              echo "env=prd" >> $GITHUB_OUTPUT
+            echo "BUILD_ENV=prd" >> $GITHUB_ENV
+          fi
+          echo "BUILD_VERSION=$version" >> $GITHUB_ENV
+
+  build-env:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get merged envirinment
+        if: github.event.pull_request.merged == true
+        id: merged
+        run: |
+          echo "env=dev" >> $GITHUB_OUTPUT
+
+      - name: Set environment
+        if: ${{ !cancelled() }}
+        run: |
+          echo "BUILD_ENV=${{ steps.merged.outputs.env || inputs.env }}" >> $GITHUB_ENV
+
+      - name: Get latest release
+        id: latest-release
+        uses: pozetroninc/github-action-get-latest-release@v0.7
+        with:
+          repository: ${{ github.repository }}
+          excludes: prerelease, draft
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add tag
+        run: |
+          latest_ref=${{ steps.latest-release.outputs.release || $(git rev-list --max-parents=0 HEAD) }}
+          count_since_latest=$(git rev-list --count $latest_ref..HEAD)
+
+          getNewestTag() {
+            if [[ $(git tag -l "*-$1*" | grep -c ".") -ne 0 ]]; then
+              echo $(git describe --tags --abbrev=0 --match "*-$1*")
+            else
+              echo $latest_ref
+            fi
+          }
+          getCountSinceRef() {
+            echo $(git rev-list --count $1..HEAD)
+          }
+          incrementPatchVersion() {
+            IFS='.' read -ra version_parts <<< "$1"
+            let "patch_version=${version_parts[2]}+1"
+            echo "${version_parts[0]}.${version_parts[1]}.$patch_version"
+          }
+
+          build="${{ env.BUILD_ENV }}"
+          if [[ $build = 'stg' ]]; then
+            newest_ref=$(getNewestTag stg)
+          elif [[ $build == 'prd' ]]; then
+            newest_ref=$(getNewestTag rc)
+          elif [[ $build = 'dev' ]]; then
+            newest_ref=$(getNewestTag dev)
           fi
 
-      - name: Show env
-        if: ${{ always() }}
+          count_since_newest=$(getCountSinceRef newest_ref)
+          if [[ $count_since_newest < $count_since_latest ]]; then
+            echo "BUILD_VERSION=$newest_ref" >> $GITHUB_ENV
+          else
+            latest_version=${{ steps.latest-release.outputs.release || 'v0.0.0' }}
+            latest_version=$(incrementPatchVersion "${latest_version#v}")
+            echo "BUILD_VERSION=$latest_version-$build.1" >> $GITHUB_ENV
+          fi
+
+  show-env:
+    needs:
+      - tag-env
+      - build-env
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show environment
         run: |
-          echo ${{ steps.build.outputs.env }}
-          echo ${{ steps.build.outputs.env || inputs.environment }}
+          echo "BUILD_ENV=${{ env.BUILD_ENV }}"
+          echo "BUILD_VERSION=${{ env.BUILD_VERSION }}"

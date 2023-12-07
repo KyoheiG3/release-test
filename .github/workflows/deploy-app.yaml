@@ -16,6 +16,10 @@ on:
           - stg
           - prd
           - "prd, but not pre-release"
+      ref:
+        description: "Commit SHA or branch name (optional)"
+        required: false
+        type: string
 
 jobs:
   tagging:
@@ -43,6 +47,7 @@ jobs:
         run: |
           version="${{ steps.tag.outputs.version }}"
           build="${{ github.event.inputs.build }}"
+          ref="${{ github.event.inputs.ref }}"
 
           if [[ $(git tag -l "$version" | grep -c ".") -ne 0 ]]; then
             echo "next deploy tag ($version) is already exists."
@@ -54,12 +59,12 @@ jobs:
               echo $(expr $(git tag -l "$version-$1.[0-9]" | grep -c ".") + 1)
             }
 
-            git tag "$version-stg.$(getNextNum stg)"
+            git tag "$version-stg.$(getNextNum stg)" "$ref"
 
             if [[ $build == 'prd' ]]; then
-              git tag "$version-rc.$(getNextNum rc)"
+              git tag "$version-rc.$(getNextNum rc)" "$ref"
             else
-              git tag "$version"
+              git tag "$version" "$ref"
             fi
 
             git push origin --tags

@@ -9,18 +9,23 @@ on:
 
 jobs:
   distribute-ios:
-    # runs-on: macos-13-xl
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Get build envirinment
+        id: build
+        run: |
           echo '1' $GITHUB_REF
           echo '2' ${{ github.ref }}
           echo '3' ${{ github.ref_name }}
           echo '4' ${{ github.head_ref }}
           echo '5' ${{ github.base_ref }}
 
-  # distribute-android:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+          tag=${{ github.ref_name }}
+          if [[ $version == *"-stg"* ]]; then
+              echo "env=stg" >> $GITHUB_OUTPUT
+          else
+              echo "env=prd" >> $GITHUB_OUTPUT
+          fi
+      - name: Show env
+        run: |
+          echo ${{ steps.build.outputs.env }}

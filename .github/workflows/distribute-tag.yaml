@@ -63,7 +63,7 @@ jobs:
 
             if [[ $build == 'prd' ]]; then
               git tag "$version-rc.$(getNextNum rc)" $ref
-            else
+            elif [[ $build != 'stg' ]]; then
               git tag "$version" $ref
             fi
 

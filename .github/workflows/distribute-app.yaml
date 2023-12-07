@@ -19,20 +19,12 @@ on:
 
 jobs:
   tag-env:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    outputs:
-      env: ${{ steps.build.outputs.env }}
     steps:
       - name: Get build envirinment
+        if: github.event_name == 'push'
         id: build
         run: |
-          echo '1' $GITHUB_REF
-          echo '2' ${{ github.ref }}
-          echo '3' ${{ github.ref_name }}
-          echo '4' ${{ github.head_ref }}
-          echo '5' ${{ github.base_ref }}
-
           tag=${{ github.ref_name }}
           if [[ $tag == *"-stg"* ]]; then
               echo "env=stg" >> $GITHUB_OUTPUT
@@ -40,25 +32,8 @@ jobs:
               echo "env=prd" >> $GITHUB_OUTPUT
           fi
 
-  dispatch-env:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    outputs:
-      env: ${{ steps.input.outputs.env }}
-    steps:
-      - name: Get input envirinment
-        id: input
-        run: |
-          echo "env='${{ inputs.environment }}'" >> $GITHUB_OUTPUT
-
-  show-env:
-    needs:
-      - tag-env
-      - dispatch-env
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Show env
+        if: ${{ always() }}
         run: |
-          echo ${{ needs.tag-env.outputs.env }}
-          echo ${{ needs.dispatch-env.outputs.env }}
+          echo ${{ steps.build.outputs.env }}
+          echo ${{ steps.build.outputs.env || inputs.environment }}

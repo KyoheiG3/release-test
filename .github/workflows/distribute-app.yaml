@@ -44,7 +44,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ inputs.environment }}
+      env: ${{ steps.input.outputs.env }}
+    steps:
+      - name: Get input envirinment
+        id: input
+        run: |
+          echo "env='${{ inputs.environment }}'" >> $GITHUB_OUTPUT
 
   show-env:
     needs:

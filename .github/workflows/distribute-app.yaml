@@ -90,20 +90,21 @@ jobs:
 
           build="${{ env.BUILD_ENV }}"
           if [[ $build = 'stg' ]]; then
-            newest_ref=$(getNewestTag stg)
+            suffix='stg'
           elif [[ $build == 'prd' ]]; then
-            newest_ref=$(getNewestTag rc)
+            suffix='rc'
           elif [[ $build = 'dev' ]]; then
-            newest_ref=$(getNewestTag dev)
+            suffix='dev'
           fi
 
-          count_since_newest=$(getCountSinceRef newest_ref)
+          newest_ref=$(getNewestTag $suffix)
+          count_since_newest=$(getCountSinceRef $newest_ref)
           if [[ $count_since_newest < $count_since_latest ]]; then
             echo "BUILD_VERSION=$newest_ref" >> $GITHUB_ENV
           else
             latest_version=${{ steps.latest-release.outputs.release || 'v0.0.0' }}
             latest_version=$(incrementPatchVersion "${latest_version#v}")
-            echo "BUILD_VERSION=$latest_version-$build.1" >> $GITHUB_ENV
+            echo "BUILD_VERSION=$latest_version-$suffix.1" >> $GITHUB_ENV
           fi
 
   show-env:

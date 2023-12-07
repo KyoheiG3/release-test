@@ -55,6 +55,7 @@ jobs:
     needs:
       - tag-env
       - dispatch-env
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Show env

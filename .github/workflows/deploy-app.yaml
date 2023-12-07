@@ -13,13 +13,12 @@ on:
         default: stg
         type: choice
         options:
-          # - dev
           - stg
           - prd
           - "prd, but not pre-release"
 
 jobs:
-  deploy:
+  tagging:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -40,7 +39,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: show log
+      - name: Add tag
         run: |
           version="${{ steps.tag.outputs.version }}"
           build="${{ github.event.inputs.build }}"
@@ -52,29 +51,14 @@ jobs:
 
           if [[ $build =~ ^(stg|prd.*)$ ]]; then
             stg_num=$(expr $(git tag -l "$version-stg.[0-9]" | grep -c ".") + 1)
-            echo 'next deploy tag is' "$version-stg.$stg_num"
             git tag "$version-stg.$stg_num"
 
             if [[ $build == 'prd' ]]; then
               rc_num=$(expr $(git tag -l "$version-rc.[0-9]" | grep -c ".") + 1)
-              echo 'next deploy tag is' "$version-rc.$rc_num"
               git tag "$version-rc.$rc_num"
             else
-              echo 'next deploy tag is' "$version"
               git tag "$version"
             fi
 
             git push origin --tags
           fi
-      # - name: Tagging
-      #   uses: actions/github-script@v7
-      #   with:
-      #     script: |
-      #       github.rest.git.createTag({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         tag: ${{ github.event.inputs.tags }},
-      #         message: ${{ github.event.inputs.tags }},
-      #         object: ${{ github.sha }},
-      #         type: 'commit',
-      #       });

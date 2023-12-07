@@ -114,6 +114,7 @@ jobs:
     needs:
       - tag-env
       - build-env
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Show environment

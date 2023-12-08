@@ -26,6 +26,9 @@ jobs:
   tag-env:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    outputs:
+      env: ${{ env.BUILD_ENV }}
+      version: ${{ env.BUILD_VERSION }}
     steps:
       - name: Get tag envirinment
         id: tag
@@ -41,6 +44,9 @@ jobs:
   build-env:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    outputs:
+      env: ${{ env.BUILD_ENV }}
+      version: ${{ env.BUILD_VERSION }}
     steps:
       - name: Get merged envirinment
         if: github.event.pull_request.merged == true
@@ -55,6 +61,7 @@ jobs:
       - name: Get latest release
         id: latest-release
         uses: pozetroninc/github-action-get-latest-release@v0.7.0
+        # リリースがされてないとエラーになるが続行させる
         continue-on-error: true
         with:
           repository: ${{ github.repository }}
@@ -67,41 +74,44 @@ jobs:
 
       - name: Add tag
         run: |
-          latest_ref=${{ steps.latest-release.outputs.release || '$(git rev-list --max-parents=0 HEAD)' }}
-          count_since_latest=$(git rev-list --count $latest_ref..HEAD)
-
-          getNewestTag() {
-            if [[ $(git tag -l "*-$1*" | grep -c ".") -ne 0 ]]; then
-              echo $(git describe --tags --abbrev=0 --match "*-$1*")
-            else
-              echo $latest_ref
-            fi
-          }
+          # 受け取った引数のコミットハッシュから現在のコミットまでのコミット数を返す関数
           getCountSinceRef() {
             echo $(git rev-list --count $1..HEAD)
           }
-          incrementPatchVersion() {
-            IFS='.' read -ra version_parts <<< "$1"
-            let "patch_version=${version_parts[2]}+1"
-            echo "${version_parts[0]}.${version_parts[1]}.$patch_version"
-          }
 
-          build="${{ env.BUILD_ENV }}"
-          if [[ $build = 'stg' ]]; then
-            suffix='stg'
-          elif [[ $build == 'prd' ]]; then
-            suffix='rc'
-          elif [[ $build = 'dev' ]]; then
-            suffix='dev'
+          # prd は rc に変換し、それ以外はそのまま使う
+          suffix=$(echo "${{ env.BUILD_ENV }}" | sed 's/prd/rc/')
+
+          # リリースがされてない場合は main ブランチの最初のコミットハッシュを ref にする
+          latest_ref=${{ steps.latest-release.outputs.release || '$(git rev-list --max-parents=0 HEAD)' }}
+          # 最終リリースから現在のコミットまでのコミット数を取得する
+          count_since_latest=$(getCountSinceRef $latest_ref)
+
+          if [[ $(git tag -l "*-$suffix*" | grep -c ".") -ne 0 ]]; then
+            # 利用したいバージョンのタグがある場合は、そのタグを ref にする
+            newest_ref=$(git describe --tags --abbrev=0 --match "*-$suffix*")
+            # 利用したいバージョンから現在のコミットまでのコミット数を取得する
+            count_since_newest=$(getCountSinceRef $newest_ref)
+          else
+            # 利用したいバージョンのタグがない場合は、最新のリリースと同じ状態にする
+            newest_ref=$latest_ref
+            count_since_newest=$count_since_latest
           fi
 
-          newest_ref=$(getNewestTag $suffix)
-          count_since_newest=$(getCountSinceRef $newest_ref)
           if [[ $count_since_newest < $count_since_latest ]]; then
+            # 最終リリースよりも利用したいバージョンの方が新しい場合は、利用したいバージョンを env に保存する処理
             echo "BUILD_VERSION=$newest_ref" >> $GITHUB_ENV
           else
+            # 最終リリースの方が新しい場合は、最終リリースのバージョンのパッチバージョンをインクリメントして env に保存する処理
+            # リリースがされてない場合は v0.0.0 を初期バージョンにする
             latest_version=${{ steps.latest-release.outputs.release || 'v0.0.0' }}
-            latest_version=$(incrementPatchVersion "${latest_version#v}")
+
+            # パッチバージョンをインクリメントする
+            IFS='.' read -ra version_parts <<< "${latest_version#v}"
+            let "patch_version=${version_parts[2]}+1"
+            latest_version="${version_parts[0]}.${version_parts[1]}.$patch_version"
+
+            # v0.0.0-xxx.0 の形にして env に保存する
             echo "BUILD_VERSION=v$latest_version-$suffix.$count_since_latest" >> $GITHUB_ENV
           fi
 
@@ -116,6 +126,9 @@ jobs:
       - build-env
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    env:
+      BUILD_ENV: ${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}
+      BUILD_VERSION: ${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}
     steps:
       - name: Show environment
         run: |

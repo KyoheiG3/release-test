@@ -34,7 +34,7 @@ jobs:
         run: |
           # タグに含まれるのは stg か rc か何もないかだけど、stg 以外は prd として env に保存する
           echo "BUILD_ENV=${{ contains(github.ref_name, '-stg') && 'stg' || 'prd' }}" >> $GITHUB_ENV
-          echo "BUILD_VERSION=$version" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
 
   build-env:
     if: github.event_name != 'push'

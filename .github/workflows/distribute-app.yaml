@@ -31,14 +31,9 @@ jobs:
       version: ${{ env.BUILD_VERSION }}
     steps:
       - name: Get tag envirinment
-        id: tag
         run: |
-          version=${{ github.ref_name }}
-          if [[ $version == *"-stg"* ]]; then
-            echo "BUILD_ENV=stg" >> $GITHUB_ENV
-          else
-            echo "BUILD_ENV=prd" >> $GITHUB_ENV
-          fi
+          # タグに含まれるのは stg か rc か何もないかだけど、stg 以外は prd として env に保存する
+          echo "BUILD_ENV=$(echo ${{ github.ref_name }} | grep -q '-stg' && echo 'stg' || echo 'prd')" >> $GITHUB_ENV
           echo "BUILD_VERSION=$version" >> $GITHUB_ENV
 
   build-env:
@@ -114,11 +109,6 @@ jobs:
             # v0.0.0-xxx.0 の形にして env に保存する
             echo "BUILD_VERSION=v$latest_version-$suffix.$count_since_latest" >> $GITHUB_ENV
           fi
-
-      - name: Show environment
-        run: |
-          echo "BUILD_ENV=${{ env.BUILD_ENV }}"
-          echo "BUILD_VERSION=${{ env.BUILD_VERSION }}"
 
   show-env:
     needs:

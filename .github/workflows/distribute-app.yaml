@@ -59,6 +59,7 @@ jobs:
         # リリースがされてないとエラーになるが続行させる
         continue-on-error: true
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           excludes: prerelease, draft
 

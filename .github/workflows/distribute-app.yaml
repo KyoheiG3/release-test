@@ -108,7 +108,8 @@ jobs:
             latest_version="${version_parts[0]}.${version_parts[1]}.$patch_version"
 
             # v0.0.0-xxx.0 の形にして env に保存する
-            echo "BUILD_VERSION=v$latest_version-$suffix.$count_since_latest" >> $GITHUB_ENV
+            build_num=$([[ $suffix == 'dev' ]] && echo $count_since_latest || echo 1 )
+            echo "BUILD_VERSION=v$latest_version-$suffix.$build_num" >> $GITHUB_ENV
           fi
 
   version-resolver:

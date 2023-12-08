@@ -33,7 +33,7 @@ jobs:
       - name: Get tag envirinment
         run: |
           # タグに含まれるのは stg か rc か何もないかだけど、stg 以外は prd として env に保存する
-          echo "BUILD_ENV=$(echo ${{ github.ref_name }} | grep -q '-stg' && echo 'stg' || echo 'prd')" >> $GITHUB_ENV
+          echo "BUILD_ENV=$(echo ${{ github.ref_name }} | grep '-stg' > /dev/null && echo 'stg' || echo 'prd')" >> $GITHUB_ENV
           echo "BUILD_VERSION=$version" >> $GITHUB_ENV
 
   build-env:

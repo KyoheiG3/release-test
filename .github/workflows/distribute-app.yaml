@@ -122,6 +122,7 @@ jobs:
       version: ${{ env.BUILD_VERSION }}
     steps:
       - name: Resolve version
+        continue-on-error: true
         run: |
           echo "BUILD_ENV=${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}" >> $GITHUB_ENV
           echo "BUILD_VERSION=${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}" >> $GITHUB_ENV

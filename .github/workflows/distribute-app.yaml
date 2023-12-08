@@ -115,7 +115,7 @@ jobs:
     needs:
       - tag-env
       - build-env
-    if: ${{ !cancelled() }}
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
       env: ${{ env.BUILD_ENV }}

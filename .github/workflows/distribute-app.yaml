@@ -115,7 +115,7 @@ jobs:
     needs:
       - tag-env
       - build-env
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
       env: ${{ env.BUILD_ENV }}
@@ -130,6 +130,7 @@ jobs:
   show-env:
     needs:
       - version-resolver
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     env:
       BUILD_ENV: ${{ needs.version-resolver.outputs.env }}

@@ -118,8 +118,13 @@ jobs:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}
-      version: ${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}
+      env: ${{ env.BUILD_ENV }}
+      version: ${{ env.BUILD_VERSION }}
+    steps:
+      - name: Resolve version
+        run: |
+          echo "BUILD_ENV=${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}" >> $GITHUB_ENV
 
   show-env:
     needs:

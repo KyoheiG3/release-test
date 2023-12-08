@@ -132,6 +132,8 @@ jobs:
       - version-resolver
     if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.version-resolver.outputs.env }}
     env:
       BUILD_ENV: ${{ needs.version-resolver.outputs.env }}
       BUILD_VERSION: ${{ needs.version-resolver.outputs.version }}
@@ -140,3 +142,4 @@ jobs:
         run: |
           echo "BUILD_ENV=${{ env.BUILD_ENV }}"
           echo "BUILD_VERSION=${{ env.BUILD_VERSION }}"
+          echo "ENVIRONMENT_NAME=${{ environment.name }}"

@@ -111,15 +111,23 @@ jobs:
             echo "BUILD_VERSION=v$latest_version-$suffix.$count_since_latest" >> $GITHUB_ENV
           fi
 
-  show-env:
+  version-resolver:
     needs:
       - tag-env
       - build-env
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    outputs:
+      env: ${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}
+      version: ${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}
+
+  show-env:
+    needs:
+      - version-resolver
+    runs-on: ubuntu-latest
     env:
-      BUILD_ENV: ${{ needs.tag-env.outputs.env || needs.build-env.outputs.env }}
-      BUILD_VERSION: ${{ needs.tag-env.outputs.version || needs.build-env.outputs.version }}
+      BUILD_ENV: ${{ needs.version-resolver.outputs.env }}
+      BUILD_VERSION: ${{ needs.version-resolver.outputs.version }}
     steps:
       - name: Show environment
         run: |

@@ -11,7 +11,7 @@ on:
 jobs:
   delete:
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 10
     steps:
       - name: Delete workflow
         env:
@@ -20,4 +20,4 @@ jobs:
           GH_WORKFLOW: ${{ github.event.inputs.workflow }}
         run: |
           gh run list --workflow "${{ env.GH_WORKFLOW }}" --limit 1000 --json databaseId,status --jq '.[] | select(.status == "completed") | .databaseId' \
-            | xargs -n 1 -I {} gh api -X DELETE repos/${{ env.GH_REPO }}/actions/runs/{}
+            | xargs -n 1 -P4 -I {} gh api -X DELETE repos/${{ env.GH_REPO }}/actions/runs/{}

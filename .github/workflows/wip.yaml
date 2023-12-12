@@ -4,16 +4,19 @@ on:
   pull_request:
     types:
       - opened
+      - labeled
+      - unlabeled
 
 jobs:
   WIP:
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
       - uses: wow-actions/wip@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           labels: "do-not-merge, work in progress, wip, rfc, 🚧"
-          keywords: ""
+          keywords: "aaa"
           context: WIP
           wip_description: "work in progress"
           ready_description: "ready for review"

@@ -4,13 +4,16 @@ on:
   pull_request:
     types:
       - opened
+      - reopened
+      - ready_for_review
   issues:
     types:
       - opened
+      - reopened
 
 jobs:
-  assign-author:
+  assign:
     runs-on: ubuntu-latest
     steps:
-      - name: Assign author
+      - name: Assign
         uses: technote-space/assign-author@v1

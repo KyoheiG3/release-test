@@ -7,6 +7,7 @@ test: 04
 test: 05
 test: 06
 test: 07
+test: 08
 release: 01
 release: 02
 release: 03

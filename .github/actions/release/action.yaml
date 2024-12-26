@@ -1,0 +1,15 @@
+name: Release
+description: Release
+
+inputs:
+  device:
+    description: "Device name"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Show device
+      shell: bash
+      run: |
+        echo "Device: ${{ inputs.device }}"

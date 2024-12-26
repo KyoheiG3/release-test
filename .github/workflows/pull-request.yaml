@@ -1,0 +1,18 @@
+name: Pull request
+
+on:
+  pull_request:
+
+jobs:
+  assign:
+    strategy:
+        matrix:
+          include:
+            - device: ios
+              configuration: ota
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull request
+        run: |
+          FLAVOR=$(${{ matrix.configuration }} == ota && echo "Ota" || echo "")
+          echo "Flavor: $FLAVOR"

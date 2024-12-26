@@ -14,5 +14,5 @@ jobs:
     steps:
       - name: Pull request
         run: |
-          FLAVOR=$(${{ matrix.configuration }} == ota && echo "Ota" || echo "")
+          FLAVOR=$(${{ matrix.configuration == 'ota' }} && echo "Ota" || echo "")
           echo "Flavor: $FLAVOR"

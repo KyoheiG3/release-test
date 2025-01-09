@@ -2,6 +2,7 @@ name: Pull request
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   get-commit-context:

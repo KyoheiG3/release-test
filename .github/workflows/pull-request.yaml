@@ -19,6 +19,7 @@ jobs:
           echo '6' ${{ github.event.pull_request.head.sha }}
           echo '7' ${{ github.sha }}
           echo '8' ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
+          echo '9' ${GITHUB_REF#refs/heads/}
 
   get-commit-context:
     if: false

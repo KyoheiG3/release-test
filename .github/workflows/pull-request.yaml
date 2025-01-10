@@ -34,8 +34,8 @@ jobs:
       - name: Get commit message
         id: commit-message
         run: |
-          echo 'sha' ${{ github.sha }})
-          echo 'head.sha' ${{ github.event.pull_request.head.sha }})
+          echo 'sha' ${{ github.sha }}
+          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
           message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
           echo $message
 
@@ -52,7 +52,25 @@ jobs:
       - name: Get commit message
         id: commit-message
         run: |
-          echo 'sha' ${{ github.sha }})
-          echo 'head.sha' ${{ github.event.pull_request.head.sha }})
+          echo 'sha' ${{ github.sha }}
+          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
+          message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
+          echo $message
+
+  get-commit-context-1:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.commit-message.outputs.MESSAGE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get commit message
+        id: commit-message
+        run: |
+          echo 'sha' ${{ github.sha }}
+          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
           message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
           echo $message

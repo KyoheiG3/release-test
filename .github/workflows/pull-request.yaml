@@ -1,7 +1,6 @@
 name: Pull request
 
 on:
-  push:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
@@ -21,7 +20,24 @@ jobs:
           echo '8' ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
           echo '9' ${GITHUB_REF#refs/heads/}
 
-  get-commit-context:
+  get-commit-context-0:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.commit-message.outputs.MESSAGE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get commit message
+        id: commit-message
+        run: |
+          echo 'sha' ${{ github.sha }}
+          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
+          commit_sha=${{ github.event.pull_request.merged && github.sha || github.event.pull_request.head.sha }}
+          message=$(git log -1 --format=%B $commit_sha)
+          echo $message
+
+  get-commit-context-2:
     runs-on: ubuntu-latest
     outputs:
       message: ${{ steps.commit-message.outputs.MESSAGE }}
@@ -29,7 +45,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+
+      - name: Get commit message
+        id: commit-message
+        run: |
+          echo 'sha' ${{ github.sha }}
+          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
+          commit_sha=${{ github.event.pull_request.merged && github.sha || github.event.pull_request.head.sha }}
+          message=$(git log -1 --format=%B $commit_sha)
+          echo $message
+
+  get-commit-context-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.commit-message.outputs.MESSAGE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
 
       - name: Get commit message
         id: commit-message

@@ -61,6 +61,7 @@ jobs:
                 echo "$array" | jq -c '.[]'
 
                 for item in $(echo "$array" | jq -c '.[]'); do
+                  echo $item
                   key=$(echo "$item" | jq -r '.key')
                   value=$(echo "$item" | jq -r '.value')
                   echo "${key}=${value}"

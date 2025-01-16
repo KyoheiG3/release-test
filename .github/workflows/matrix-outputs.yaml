@@ -16,9 +16,7 @@ jobs:
 
       - name: Create env json
         run: |
-          dir="./env/${{ matrix.device }}/${{ matrix.environment }}"
-          mkdir -p $dir
-          cat << EOF > $dir/out.json
+          cat << EOF > ./out.json
           {
             "environment": "${{ matrix.environment }}",
             "device": "${{ matrix.device }}"
@@ -29,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env-${{ matrix.device }}-${{ matrix.environment }}
-          path: ./env/${{ matrix.device }}/${{ matrix.environment }}/out.json
+          path: ./out.json
           overwrite: true
 
   get-results:

@@ -47,6 +47,8 @@ jobs:
       - name: Get Results
         id: result
         run: |
+          ls -la
+          ls -la ./env
           devices=("android" "ios")
           environments=("dev" "prd")
 

@@ -47,14 +47,14 @@ jobs:
       - name: Get Results
         id: result
         run: |
-          ls -la
-          ls -la ./env
           devices=("android" "ios")
           environments=("dev" "prd")
 
           for device in "${devices[@]}"; do
             for environment in "${environments[@]}"; do
-              file="./env/${device}/${environment}/out.json"
+              dir="env-${device}-${environment}"
+              ls -la $dir
+              file="$dir/out.json"
               if [ -f "$file" ]; then
                 echo "Processing $file"
                 cat $file

@@ -47,7 +47,8 @@ jobs:
       - name: Get Results
         id: result
         run: |
-          for dir in "./env/*"; do
+          path="./env/*"
+          for dir in $path; do
             file=$dir/out.json
             if [ -f "$file" ]; then
               echo "Processing $file"

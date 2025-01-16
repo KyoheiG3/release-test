@@ -1,0 +1,63 @@
+name: Matrix outputs
+
+on:
+  pull_request:
+
+jobs:
+  create-env:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, prd]
+        device: [android, ios]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create env json
+        run: |
+          dir="./env/${{ matrix.device }}/${{ matrix.environment }}"
+          mkdir -p $dir
+          cat << EOF > $dir/out.json
+          {
+            "environment": "${{ matrix.environment }}",
+            "device": "${{ matrix.device }}"
+          }
+          EOF
+
+      - name: Save result to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-${{ matrix.device }}-${{ matrix.environment }}
+          path: ./env/${{ matrix.device }}/${{ matrix.environment }}/out.json
+          overwrite: true
+
+  get-results:
+    needs: create-env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all results
+        uses: actions/download-artifact@v4
+        with:
+          path: .
+
+      - name: Get Results
+        id: result
+        run: |
+          devices=("android" "ios")
+          environments=("dev" "prd")
+
+          for device in "${devices[@]}"; do
+            for environment in "${environments[@]}"; do
+              file="./env/${device}/${environment}/out.json"
+              if [ -f "$file" ]; then
+                echo "Processing $file"
+                cat $file
+              else
+                echo "File $file not found"
+              fi
+            done
+          done

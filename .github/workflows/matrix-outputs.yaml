@@ -16,7 +16,7 @@ jobs:
 
       - name: Create env json
         run: |
-          prefix=$(echo "${{ matrix.device }}_${{ matrix.environment }}" | tr '[:lower:]' '[:upper:]')
+          prefix=${{ matrix.device }}_${{ matrix.environment }}
 
           cat << EOF > ./out.json
           {
@@ -58,7 +58,7 @@ jobs:
                 echo "Processing $file"
 
                 cat $file | jq -c 'to_entries[]' | while read -r item; do
-                  key=$(echo "$item" | jq -r '.key')
+                  key=$(echo "$item" | jq -r '.key' | tr '[:lower:]' '[:upper:]')
                   value=$(echo "$item" | jq -r '.value')
                   echo "${key}=${value}" >> "$GITHUB_OUTPUT"
                 done
@@ -70,7 +70,7 @@ jobs:
 
       - name: Show results
         run: |
-          echo "${{ steps.result.outputs.IOS_DEV_environment }}"
-          echo "${{ steps.result.outputs.IOS_DEV_device }}"
-          echo "${{ steps.result.outputs.ANDROID_PRD_environment }}"
-          echo "${{ steps.result.outputs.ANDROID_PRD_device }}"
+          echo "${{ steps.result.outputs.IOS_DEV_ENVIRONMENT }}"
+          echo "${{ steps.result.outputs.IOS_DEV_DEVICE }}"
+          echo "${{ steps.result.outputs.ANDROID_PRD_ENVIRONMENT }}"
+          echo "${{ steps.result.outputs.ANDROID_PRD_DEVICE }}"

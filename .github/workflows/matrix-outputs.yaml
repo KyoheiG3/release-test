@@ -61,6 +61,7 @@ jobs:
                 for item in $(echo "$array" | jq -c '.[]'); do
                   key=$(echo "$item" | jq -r '.key')
                   value=$(echo "$item" | jq -r '.value')
+                  echo "${key}=${value}"
                   echo "${key}=${value}" >> "$GITHUB_OUTPUT"
                 done
               else

@@ -59,17 +59,12 @@ jobs:
                 json=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
                 echo $json
 
-                echo "$file" | jq -c 'to_entries[]' | while read -r item; do
-                  key=$(echo "$item" | jq -r '.key')
-                  value=$(echo "$item" | jq -r '.value')
-                  echo "Key: $key, Value: $value"
-                done
-
                 for item in $(echo "$json" | jq -c '.[]'); do
                   echo $item
-                  key=$(echo "$item" | jq -r '.key')
-                  value=$(echo "$item" | jq -r '.value')
-                  echo $key
+                  key=$(echo "$item" | jq -r 'keys[0]')
+                  value=$(echo "$item" | jq -r '.[keys[0]]')
+                  echo "Key: $key"
+                  echo "Value: $value"
                   echo $value
                   echo "${key}=${value}"
                   echo "${key}=${value}" >> "$GITHUB_OUTPUT"

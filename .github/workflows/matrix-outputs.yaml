@@ -59,7 +59,7 @@ jobs:
                 json=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
                 echo $json
 
-                echo "$json" | jq -c 'to_entries[]' | while read -r item; do
+                echo "$file" | jq -c 'to_entries[]' | while read -r item; do
                   key=$(echo "$item" | jq -r '.key')
                   value=$(echo "$item" | jq -r '.value')
                   echo "Key: $key, Value: $value"

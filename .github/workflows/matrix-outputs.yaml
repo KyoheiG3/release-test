@@ -56,10 +56,10 @@ jobs:
               if [ -f "$file" ]; then
                 echo "Processing $file"
 
-                json=$(cat $file | jq '[to_entries[]]')
+                json=$(cat $file | jq 'to_entries[]')
                 echo $json
 
-                for item in $json; do
+                cat $file | jq -c 'to_entries[]' | while read -r item; do
                   key=$(echo "$item" | jq -r '.key')
                   value=$(echo "$item" | jq -r '.value')
                   echo "${key}=${value}" >> "$GITHUB_OUTPUT"

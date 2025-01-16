@@ -42,30 +42,27 @@ jobs:
       - name: Download all results
         uses: actions/download-artifact@v4
         with:
-          path: .
+          path: ./env
 
       - name: Get Results
         id: result
         run: |
-          devices=("android" "ios")
-          environments=("dev" "prd")
+          paths="./env/*"
+          for path in $paths; do
+            echo $path
+            file=$path/out.json
+            echo $file
+            if [ -f "$file" ]; then
+              echo "Processing $file"
 
-          for device in "${devices[@]}"; do
-            for environment in "${environments[@]}"; do
-              file="env-${device}-${environment}/out.json"
-
-              if [ -f "$file" ]; then
-                echo "Processing $file"
-
-                cat $file | jq -c 'to_entries[]' | while read -r item; do
-                  key=$(echo "$item" | jq -r '.key' | tr '[:lower:]' '[:upper:]')
-                  value=$(echo "$item" | jq -r '.value')
-                  echo "${key}=${value}" >> "$GITHUB_OUTPUT"
-                done
-              else
-                echo "File $file not found"
-              fi
-            done
+              cat $file | jq -c 'to_entries[]' | while read -r item; do
+                key=$(echo "$item" | jq -r '.key' | tr '[:lower:]' '[:upper:]')
+                value=$(echo "$item" | jq -r '.value')
+                echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+              done
+            else
+              echo "File $file not found"
+            fi
           done
 
       - name: Show results

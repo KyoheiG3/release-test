@@ -16,10 +16,12 @@ jobs:
 
       - name: Create env json
         run: |
+          prefix="${{ matrix.device }}_${{ matrix.environment }}"
+
           cat << EOF > ./out.json
           {
-            "environment": "${{ matrix.environment }}",
-            "device": "${{ matrix.device }}"
+            "${prefix}_device": "${{ matrix.device }}",
+            "${prefix}_environment": "${{ matrix.environment }}"
           }
           EOF
 
@@ -50,14 +52,26 @@ jobs:
 
           for device in "${devices[@]}"; do
             for environment in "${environments[@]}"; do
-              dir="env-${device}-${environment}"
-              ls -la $dir
-              file="$dir/out.json"
+              file="env-${device}-${environment}/out.json"
               if [ -f "$file" ]; then
                 echo "Processing $file"
-                cat $file
+
+                array=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
+
+                for item in $(echo "$array" | jq -c '.[]'); do
+                  key=$(echo "$item" | jq -r '.key')
+                  value=$(echo "$item" | jq -r '.value')
+                  echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+                done
               else
                 echo "File $file not found"
               fi
             done
           done
+
+      - name: Show results
+        run: |
+          echo "${{ steps.result.outputs.ios_dev_environment }}"
+          echo "${{ steps.result.outputs.ios_dev_device }}"
+          echo "${{ steps.result.outputs.android_prd_environment }}"
+          echo "${{ steps.result.outputs.android_prd_device }}"

@@ -57,6 +57,8 @@ jobs:
                 echo "Processing $file"
 
                 array=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
+                echo $array
+                echo "$array" | jq -c '.[]'
 
                 for item in $(echo "$array" | jq -c '.[]'); do
                   key=$(echo "$item" | jq -r '.key')

@@ -16,10 +16,11 @@ jobs:
 
       - name: Create env json
         run: |
+          prefix="${{ matrix.device }}_${{ matrix.environment }}"
           cat << EOF > ./out.json
           {
-            "environment": "${{ matrix.environment }}",
-            "device": "${{ matrix.device }}"
+            "${prefix}_environment": "${{ matrix.environment }}",
+            "${prefix}_device": "${{ matrix.device }}"
           }
           EOF
 
@@ -56,8 +57,16 @@ jobs:
               if [ -f "$file" ]; then
                 echo "Processing $file"
                 cat $file
+                jq . $file >> "$GITHUB_OUTPUT"
               else
                 echo "File $file not found"
               fi
             done
           done
+
+      - name: Show results
+        run: |
+          echo "${{ steps.result.outputs.ios_dev_environment }}"
+          echo "${{ steps.result.outputs.ios_dev_device }}"
+          echo "${{ steps.result.outputs.android_prd_environment }}"
+          echo "${{ steps.result.outputs.android_prd_device }}"

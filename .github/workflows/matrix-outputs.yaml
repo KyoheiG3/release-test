@@ -56,11 +56,16 @@ jobs:
               if [ -f "$file" ]; then
                 echo "Processing $file"
 
-                array=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
-                echo $array
-                echo "$array" | jq -c '.[]'
+                json=$(cat $file | jq '[to_entries[] | {(.key): .value}]')
+                echo $json
 
-                for item in $(echo "$array" | jq -c '.[]'); do
+                echo "$json" | jq -c 'to_entries[]' | while read -r item; do
+                  key=$(echo "$item" | jq -r '.key')
+                  value=$(echo "$item" | jq -r '.value')
+                  echo "Key: $key, Value: $value"
+                done
+
+                for item in $(echo "$json" | jq -c '.[]'); do
                   echo $item
                   key=$(echo "$item" | jq -r '.key')
                   value=$(echo "$item" | jq -r '.value')

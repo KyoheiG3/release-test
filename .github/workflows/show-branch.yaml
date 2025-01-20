@@ -28,5 +28,3 @@ jobs:
 
       - name: Show branch
         uses: ./.github/actions/sha
-        with:
-          branch: 'branch name'

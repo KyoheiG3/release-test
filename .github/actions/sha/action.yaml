@@ -11,12 +11,14 @@ runs:
         echo "Show github.base_ref:" ${{ github.base_ref }}
         echo "Show github.head_ref:" ${{ github.head_ref }}
         echo "Show ref:" ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
+        echo "Show push sha:" ${{ github.sha }}
+        echo "Show pull_request sha:" ${{ github.event.pull_request.head.sha }}
       shell: bash
 
     - name: Show sha
       env:
         BRANCH: ${{ github.event_name == 'push' && github.ref_name || (github.event.pull_request.merged && github.base_ref || github.head_ref) }}
-        COMMIT_SHA: ${{ (github.event_name == 'push' || github.event.pull_request.merged) && github.sha || event.pull_request.head.sha }}
+        COMMIT_SHA: ${{ (github.event_name == 'push' || github.event.pull_request.merged) && github.sha || github.event.pull_request.head.sha }}
       shell: bash
       run: |
         echo "BRANCH: ${{ env.BRANCH }}"

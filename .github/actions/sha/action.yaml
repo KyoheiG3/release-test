@@ -5,14 +5,13 @@ inputs:
   branch:
     description: 'The branch name to notify'
     required: false
-    default: ''
 
 runs:
   using: composite
   steps:
     - name: Show sha
       env:
-        BRANCH: ${{ inputs.branch != '' && inputs.branch || (github.event.pull_request.merged && github.base_ref || github.head_ref) }}
+        BRANCH: $(${{ inputs.branch != '' }} && ${{ inputs.branch }} || ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }})
       shell: bash
       run: |
         echo "Sha: ${{ env.BRANCH }}"

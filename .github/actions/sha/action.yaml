@@ -10,9 +10,13 @@ runs:
   using: composite
   steps:
     - run: |
-        echo "Show inputs.branch" ${{ inputs.branch }}
-        echo "Show inputs.branch == null" ${{ inputs.branch == null }}
-        echo "Show inputs.branch == ''" ${{ inputs.branch == '' }}
+        echo "Show inputs.branch:" ${{ inputs.branch }}
+        echo "Show inputs.branch == null:" ${{ inputs.branch == null }}
+        echo "Show inputs.branch == '':" ${{ inputs.branch == '' }}
+        echo "Show github.event.pull_request.merged:" ${{ github.event.pull_request.merged }}
+        echo "Show github.base_ref:" ${{ github.base_ref }}
+        echo "Show github.head_ref:" ${{ github.head_ref }}
+        echo "Show ref:" ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
       shell: bash
 
     - name: Show sha

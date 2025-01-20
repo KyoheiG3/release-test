@@ -1,18 +1,12 @@
 name: Sha
 description: Show sha
 
-inputs:
-  branch:
-    description: 'The branch name to notify'
-    required: false
-
 runs:
   using: composite
   steps:
     - run: |
-        echo "Show inputs.branch:" ${{ inputs.branch }}
-        echo "Show inputs.branch == null:" ${{ inputs.branch == null }}
-        echo "Show inputs.branch == '':" ${{ inputs.branch == '' }}
+        echo "Show github.event_name:" ${{ github.event_name }}
+        echo "Show github.ref_name == null:" ${{ github.ref_name }}
         echo "Show github.event.pull_request.merged:" ${{ github.event.pull_request.merged }}
         echo "Show github.base_ref:" ${{ github.base_ref }}
         echo "Show github.head_ref:" ${{ github.head_ref }}
@@ -21,7 +15,7 @@ runs:
 
     - name: Show sha
       env:
-        BRANCH: ${{ inputs.branch != '' }} && ${{ inputs.branch }} || ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
+        BRANCH: ${{ github.event_name == 'push' }} && ${{ github.ref_name }} || ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
       shell: bash
       run: |
-        echo "Sha: ${{ env.BRANCH }}"
+        echo "BRANCH: ${{ env.BRANCH }}"

@@ -1,0 +1,30 @@
+name: Show branch
+
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "**"
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+      - labeled
+
+jobs:
+  show-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Show context
+        run: |
+          echo "github.event.pull_request.merged:" ${{ github.event.pull_request.merged }}
+          echo "github.event.label.name:" ${{ github.event.label.name }}
+          echo "github.event.head_commit.message:" ${{ github.event.head_commit.message }}
+
+      - name: Show branch
+        uses: ./.github/actions/sha

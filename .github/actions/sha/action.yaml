@@ -5,6 +5,7 @@ inputs:
   branch:
     description: 'The branch name to notify'
     required: false
+    default: ''
 
 runs:
   using: composite

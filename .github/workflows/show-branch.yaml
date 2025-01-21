@@ -43,3 +43,15 @@ jobs:
 
       - name: Show branch
         uses: ./.github/actions/sha
+
+  show-checked:
+    runs-on: ubuntu-latest
+    needs: check-test
+    if: needs.check-test.outputs.checked
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show checked
+        run: |
+          echo "checked:" ${{ needs.check-test.outputs.checked }}

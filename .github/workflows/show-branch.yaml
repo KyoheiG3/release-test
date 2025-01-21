@@ -5,6 +5,13 @@ on:
     types: [opened, synchronize, reopened, closed, labeled]
 
 jobs:
+  show-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show label
+        run: |
+          echo "github.event.label.name:" ${{ github.event.label.name }}
+
   check-test:
     runs-on: ubuntu-latest
     steps:

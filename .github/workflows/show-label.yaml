@@ -1,0 +1,30 @@
+name: Show label
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed, labeled]
+
+jobs:
+  show-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show label
+        run: |
+          echo "github.event.label.name:" ${{ github.event.label.name }}
+
+  show-ref:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 2
+
+      - name: Show ref
+        run: |
+          echo "github.base_ref:" ${{ github.base_ref }}
+          echo "github.head_ref:" ${{ github.head_ref }}
+          echo "github.ref:" ${{ github.ref }}
+          echo "github.ref_name:" ${{ github.ref_name }}

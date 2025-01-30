@@ -9,16 +9,7 @@ jobs:
     steps:
       - name: Check condition
         id: check-condition
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const action = '${{ github.event.action }}'
-            core.info(`action: ${action}`);
-
-            if (action != 'closed') {
-              core.info('Skipping this job');
-              return;
-            }
+        run: exit 0
 
       - name: Skip this job
         run: echo "This step will only run if condition is not met"

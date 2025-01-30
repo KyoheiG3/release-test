@@ -1,0 +1,17 @@
+name: Show tag
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+-[0-9]+"
+  pull_request:
+    types: [synchronize, closed, labeled]
+
+jobs:
+  show-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show context
+        run: |
+          echo "github.event.action:" ${{ github.event.action }}
+          echo "github.event.label:" ${{ github.event.label }}

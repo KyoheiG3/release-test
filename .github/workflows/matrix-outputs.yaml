@@ -14,6 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check condition
+        run: |
+          context_condition=${{ github.event.pull_request.merged }}
+          build_condition_1=$(${{ matrix.device == 'android' }} || $context_condition)
+          build_condition_2=${{ matrix.device == 'android' }} || $context_condition
+          echo "Build condition 1: $build_condition_1"
+          echo "Build condition 2: $build_condition_2"
+          echo "Context condition: $context_condition"
+
       - name: Create env json
         run: |
           prefix=${{ matrix.device }}_${{ matrix.environment }}

@@ -1,0 +1,24 @@
+name: Skip job
+
+on:
+  pull_request:
+
+jobs:
+  my_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check condition
+        id: check-condition
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const action = '${{ github.event.action }}'
+            core.info(`action: ${action}`);
+
+            if (action != 'closed') {
+              core.info('Skipping this job');
+              return;
+            }
+
+      - name: Skip this job
+        run: echo "This step will only run if condition is not met"

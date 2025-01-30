@@ -14,4 +14,3 @@ jobs:
       - name: Show context
         run: |
           echo "github.event.action:" ${{ github.event.action }}
-          echo "github.event.label:" ${{ github.event.label }}

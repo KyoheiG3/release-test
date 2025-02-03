@@ -63,3 +63,19 @@ jobs:
           author_name=$(git log -1 --pretty=format:'%aN' $commit_sha)
           echo $author_name
           echo ${{ github.actor}}
+
+      - name: Check event
+        run: |
+          is_opened_or_sync_1="{ [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "synchronize" ]; }"
+          echo "is_opened_or_sync_1:" $is_opened_or_sync_1
+
+          if [ "$is_opened_or_sync_1" ]; then
+            echo "echo 1"
+          fi
+
+          is_opened_or_sync_2=${{ github.event.action == 'opened' || github.event.action == 'synchronize' }}
+          echo "is_opened_or_sync_2:" $is_opened_or_sync_2
+
+          if [ "$is_opened_or_sync_2" ]; then
+            echo "echo 2"
+          fi

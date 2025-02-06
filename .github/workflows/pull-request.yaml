@@ -3,6 +3,7 @@ name: Pull request
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 jobs:
   show-context:
@@ -66,10 +67,8 @@ jobs:
 
       - name: Next working day
         run: |
-          next_day=$(date -d '+1 day' '+%Y-%m-%d')
-          next_weekday=$(date -d "$next_day" '+%u')
-          while [ "$next_weekday" -gt 5 ]; do
-            next_day=$(date -d "$next_day +1 day" '+%Y-%m-%d')
-            next_weekday=$(date -d "$next_day" '+%u')
-          done
-          echo $next_day
+          if [ ${{ github.event_name != 'workflow_dispatch' }} ]; then
+            echo "This is not a manual trigger"
+          else
+            echo "This is a manual trigger"
+          fi

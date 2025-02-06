@@ -65,9 +65,9 @@ jobs:
           echo $author_name
           echo ${{ github.actor}}
 
-      - name: Next working day
+      - name: Check workflow trigger
         run: |
-          if [ ${{ github.event_name != 'workflow_dispatch' }} ]; then
+          if [ ${{ github.event_name }} != 'workflow_dispatch' ]; then
             echo "This is not a manual trigger"
           else
             echo "This is a manual trigger"

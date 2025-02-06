@@ -64,18 +64,12 @@ jobs:
           echo $author_name
           echo ${{ github.actor}}
 
-      - name: Check event
+      - name: Next working day
         run: |
-          is_opened_or_sync_1="{ [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "synchronize" ]; }"
-          echo "is_opened_or_sync_1:" $is_opened_or_sync_1
-
-          if [ $is_opened_or_sync_1 == "true" ]; then
-            echo "echo 1"
-          fi
-
-          is_opened_or_sync_2=${{ github.event.action == 'opened' || github.event.action == 'synchronize' }}
-          echo "is_opened_or_sync_2:" $is_opened_or_sync_2
-
-          if [ $is_opened_or_sync_2 == "true" ]; then
-            echo "echo 2"
-          fi
+          next_day=$(date -d '+1 day' '+%Y-%m-%d')
+          next_weekday=$(date -d "$next_day" '+%u')
+          while [ "$next_weekday" -gt 5 ]; do
+            next_day=$(date -d "$next_day +1 day" '+%Y-%m-%d')
+            next_weekday=$(date -d "$next_day" '+%u')
+          done
+          echo $next_day

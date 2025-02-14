@@ -45,30 +45,28 @@ jobs:
 
   get-commit-context-ref:
     runs-on: ubuntu-latest
-    outputs:
-      message: ${{ steps.commit-message.outputs.MESSAGE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.merged && github.base_ref || github.head_ref }}
 
-      - name: Get commit message
-        id: commit-message
-        run: |
-          echo 'sha' ${{ github.sha }}
-          echo 'head.sha' ${{ github.event.pull_request.head.sha }}
-          commit_sha=${{ github.event.pull_request.merged && github.sha || github.event.pull_request.head.sha }}
-          message=$(git log -1 --format=%B $commit_sha)
-          echo $message
-          author_name=$(git log -1 --pretty=format:'%aN' $commit_sha)
-          echo $author_name
-          echo ${{ github.actor}}
+      - name: Get today's date
+        id: get-today
+        run: echo "date=$(date '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
-      - name: Check workflow trigger
+      - name: Check to create PR
+        id: check-create-pr
         run: |
-          if [ ${{ github.event_name }} != 'workflow_dispatch' ]; then
-            echo "This is not a manual trigger"
-          else
-            echo "This is a manual trigger"
-          fi
+          echo "should-create=${{ steps.get-today.outputs.exists == '2025-02-14' || github.event_name == 'workflow_dispatch' }}" >> "$GITHUB_OUTPUT"          
+
+      - name: Check String condition
+        if: ${{ steps.check-create-pr.outputs.should-create == 'true' }}
+        run: echo "String condition is true"
+
+      - name: Check Boolean condition 1
+        if: ${{ steps.check-create-pr.outputs.should-create == true }}
+        run: echo "Boolean condition is true"
+
+      - name: Check Boolean condition 2
+        if: ${{ steps.check-create-pr.outputs.should-create }}
+        run: echo "Boolean condition is true"
+

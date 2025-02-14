@@ -56,7 +56,7 @@ jobs:
       - name: Check to create PR
         id: check-create-pr
         run: |
-          echo "should-create=${{ steps.get-today.outputs.exists == '2025-02-14' || github.event_name == 'workflow_dispatch' }}" >> "$GITHUB_OUTPUT"          
+          echo "should-create=${{ steps.get-today.outputs.date == '2025-02-14' || github.event_name == 'workflow_dispatch' }}" >> "$GITHUB_OUTPUT"          
 
       - name: Check String condition
         if: ${{ steps.check-create-pr.outputs.should-create == 'true' }}

@@ -5,7 +5,7 @@ on:
     types: [created]
 
 env:
-  BRANCH_NAME: ${{ (github.event.issue.pull_request && startsWith(github.event.comment.body, '/test')) && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
+  BRANCH_NAME: ${{ (github.event.issue.pull_request && startsWith(github.event.comment.body, '/test')) && format('refs/pull/{0}/head', github.event.issue.number) || null }}
 
 jobs:
   check-comment-context:

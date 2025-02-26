@@ -4,27 +4,22 @@ on:
   issue_comment:
     types: [created]
 
+env:
+  BRANCH_NAME: ${{ (github.event.issue.pull_request && startsWith(github.event.comment.body, '/test')) }} == 'true' && 'refs/pull/${{ github.event.issue.number }}/head'
+
 jobs:
   check-comment-context:
     runs-on: ubuntu-latest
     steps:
+      - run: echo ${{ env.BRANCH_NAME }}
+
       - name: Checkout repository 1
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Display current branch and commit
-        run: |
-          echo "git branch: $(git branch)"
-          echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
-          echo "Commit: $(git rev-parse HEAD)"
-
-      - name: Checkout repository 2
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ env.BRANCH_NAME }}
 
       - name: Display current branch and commit
         run: |
           echo "git branch: $(git branch)"
           echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
           echo "Commit: $(git rev-parse HEAD)"
-

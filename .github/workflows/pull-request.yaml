@@ -62,7 +62,3 @@ jobs:
         if: ${{ steps.check-create-pr.outputs.should-create == 'true' }}
         run: echo "String condition is true"
 
-      - name: Check Boolean condition 1
-        if: ${{ steps.check-create-pr.outputs.should-create == true }}
-        run: echo "Boolean condition is true"
-
